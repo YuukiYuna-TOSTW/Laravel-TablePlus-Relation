@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* helper styles removed; layout uses Tailwind utilities directly */
+
+/* ----------------------------- */
+/* Custom application styles here */
+/* ----------------------------- */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
