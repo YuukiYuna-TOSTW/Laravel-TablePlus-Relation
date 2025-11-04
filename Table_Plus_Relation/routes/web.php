@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\BlogController;
-use App\Http\Controllers\PortfolioController;
+use App\Http\Controllers\AboutController;
 
 // Halaman utama
 Route::get('/', function () {
@@ -12,7 +12,7 @@ Route::get('/', function () {
 });
 
 // Static pages
-Route::get('/about', [PortfolioController::class, 'index'])->name('about.index');
+Route::get('/about', [AboutController::class, 'index'])->name('about.index');
 Route::get('/contact', function () { return view('contact'); })->name('contact');
 
 // Handle contact form submission - sends messages to admin message system

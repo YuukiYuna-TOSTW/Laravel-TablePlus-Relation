@@ -64,7 +64,7 @@
             </div>
 
             <div class="max-w-4xl mx-auto">
-                @foreach($experiences as $exp)
+                @foreach($experiences ?? [] as $exp)
                     <div class="mb-12 animate-on-scroll">
                         <div class="flex flex-col md:flex-row">
                             <div class="md:w-1/3 mb-4 md:mb-0">
@@ -73,10 +73,15 @@
                                 <p class="text-gray-400 text-sm">{{ $exp->period }}</p>
                             </div>
                             <div class="md:w-2/3 bg-gray-50 rounded-xl p-6 card-hover">
-                                <p class="text-gray-700 mb-4">{{ $exp->description }}</p>
-                                @if($exp->details)
+                                <p class="text-gray-700 mb-4">{{ $exp->description ?? '' }}</p>
+
+                                @php
+                                    $expDetails = json_decode($exp->details ?? '[]', true) ?: [];
+                                @endphp
+
+                                @if(!empty($expDetails))
                                     <ul class="text-gray-600 list-disc pl-5">
-                                        @foreach(json_decode($exp->details) as $detail)
+                                        @foreach($expDetails as $detail)
                                             <li>{{ $detail }}</li>
                                         @endforeach
                                     </ul>
@@ -98,17 +103,17 @@
             </div>
 
             <div class="max-w-4xl mx-auto">
-                @foreach($skills as $category => $skillGroup)
+                @foreach(($skills ?? []) as $category => $skillGroup)
                     <div class="bg-white rounded-xl p-6 shadow-sm card-hover animate-on-scroll mb-8">
                         <h3 class="text-xl font-bold text-blue-700 mb-6">{{ $category }}</h3>
                         @foreach($skillGroup as $skill)
                             <div class="mb-4">
                                 <div class="flex justify-between mb-1">
                                     <span class="text-gray-700">{{ $skill->name }}</span>
-                                    <span class="text-gray-700">{{ $skill->level }}%</span>
+                                    <span class="text-gray-700">{{ $skill->level ?? 0 }}%</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                    <div class="bg-blue-600 h-2.5 rounded-full skill-bar" style="width:0%" data-width="{{ $skill->level }}%"></div>
+                                    <div class="bg-blue-600 h-2.5 rounded-full skill-bar" style="width:0%" data-width="{{ $skill->level ?? 0 }}%"></div>
                                 </div>
                             </div>
                         @endforeach
@@ -127,24 +132,30 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach($projects as $project)
+                @foreach($projects ?? [] as $project)
+                    @php
+                        $techs = json_decode($project->technologies ?? '[]', true) ?: [];
+                        $demoLink = $project->demo_link ?? '#';
+                        $sourceLink = $project->source_code ?? '#';
+                    @endphp
+
                     <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover animate-on-scroll">
                         <div class="h-48 bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center">
-                            <i class="{{ $project->icon }} text-white text-5xl"></i>
+                            <i class="{{ $project->icon ?? 'fas fa-box' }} text-white text-5xl"></i>
                         </div>
                         <div class="p-6">
-                            <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $project->title }}</h3>
-                            <p class="text-gray-600 mb-4">{{ $project->description }}</p>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $project->title ?? '' }}</h3>
+                            <p class="text-gray-600 mb-4">{{ $project->description ?? '' }}</p>
                             <div class="flex flex-wrap gap-2 mb-4">
-                                @foreach(json_decode($project->technologies) as $tech)
+                                @foreach($techs as $tech)
                                     <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">{{ $tech }}</span>
                                 @endforeach
                             </div>
                             <div class="flex justify-between">
-                                <a href="{{ $project->demo_link }}" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                                <a href="{{ $demoLink }}" target="{{ $demoLink !== '#' ? '_blank' : '_self' }}" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
                                     <i class="fas fa-external-link-alt mr-1"></i> Live Demo
                                 </a>
-                                <a href="{{ $project->source_code }}" target="_blank" class="text-gray-600 hover:text-gray-800 font-medium flex items-center">
+                                <a href="{{ $sourceLink }}" target="{{ $sourceLink !== '#' ? '_blank' : '_self' }}" class="text-gray-600 hover:text-gray-800 font-medium flex items-center">
                                     <i class="fab fa-github mr-1"></i> Source Code
                                 </a>
                             </div>
@@ -154,9 +165,41 @@
             </div>
 
             <div class="text-center mt-12">
-                <a href="/contact" class="bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 transition-all inline-flex items-center">
+                <a href="{{ url('/contact') }}" class="bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 transition-all inline-flex items-center">
                     <i class="fas fa-paper-plane mr-2"></i> Tertarik Bekerja Sama?
                 </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Tentang Saya</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Sedikit informasi mengenai latar belakang dan keahlian saya</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto bg-white rounded-xl p-6 shadow-sm">
+                @if(isset($about))
+                    <h1 class="text-2xl font-bold text-gray-800 mb-4">{{ $about->title ?? '' }}</h1>
+                    <p class="text-gray-700 mb-4">{{ $about->content ?? '' }}</p>
+
+                    @if($about->experience)
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Pengalaman</h3>
+                        <p class="text-gray-700 mb-4">{{ $about->experience->title ?? '—' }}</p>
+                    @endif
+
+                    @if($about->skill)
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Keterampilan</h3>
+                        <p class="text-gray-700 mb-4">{{ $about->skill->name ?? '—' }}</p>
+                    @endif
+
+                    @if($about->project)
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Proyek</h3>
+                        <p class="text-gray-700 mb-4">{{ $about->project->title ?? '—' }}</p>
+                    @endif
+                @endif
             </div>
         </div>
     </section>

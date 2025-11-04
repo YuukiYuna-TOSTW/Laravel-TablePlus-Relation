@@ -7,6 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Skill extends Model
 {
-    /** @use HasFactory<\Database\Factories\SkillFactory> */
     use HasFactory;
+
+    protected $table = 'skills';
+    protected $primaryKey = 'id';
+    public $incrementing = true;
+    protected $keyType = 'int';
+
+    protected $guarded = [];
+
+    // relasi ke About (about.skill_id)
+    public function abouts()
+    {
+        return $this->hasMany(About::class, 'skill_id');
+    }
 }
