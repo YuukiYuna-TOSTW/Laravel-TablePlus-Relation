@@ -42,16 +42,22 @@
 @section('content')
     <!-- Hero Section -->
     <section class="bg-gradient-to-r from-blue-500 to-blue-700 text-white py-16">
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="#experience" class="bg-white text-blue-600 font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all">
-                <i class="fas fa-briefcase mr-2"></i> Pengalaman
-            </a>
-            <a href="#skills" class="bg-transparent border-2 border-white text-white font-semibold py-3 px-6 rounded-lg hover:bg-white hover:bg-opacity-10 transition-all">
-                <i class="fas fa-code mr-2"></i> Keterampilan
-            </a>
-            <a href="#projects" class="bg-transparent border-2 border-white text-white font-semibold py-3 px-6 rounded-lg hover:bg-white hover:bg-opacity-10 transition-all">
-                <i class="fas fa-project-diagram mr-2"></i> Proyek
-            </a>
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">Portfolio Saya</h1>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">
+                Koleksi pengalaman, keterampilan, dan proyek yang telah saya kerjakan
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#experience" class="bg-white text-blue-600 font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all">
+                    <i class="fas fa-briefcase mr-2"></i> Pengalaman
+                </a>
+                <a href="#skills" class="bg-transparent border-2 border-white text-white font-semibold py-3 px-6 rounded-lg hover:bg-white hover:bg-opacity-10 transition-all">
+                    <i class="fas fa-code mr-2"></i> Keterampilan
+                </a>
+                <a href="#projects" class="bg-transparent border-2 border-white text-white font-semibold py-3 px-6 rounded-lg hover:bg-white hover:bg-opacity-10 transition-all">
+                    <i class="fas fa-project-diagram mr-2"></i> Proyek
+                </a>
+            </div>
         </div>
     </section>
 
@@ -64,24 +70,19 @@
             </div>
 
             <div class="max-w-4xl mx-auto">
-                @foreach($experiences ?? [] as $exp)
+                @if(isset($about) && $about->experience)
                     <div class="mb-12 animate-on-scroll">
                         <div class="flex flex-col md:flex-row">
                             <div class="md:w-1/3 mb-4 md:mb-0">
-                                <h3 class="text-xl font-bold">{{ $exp->title }}</h3>
-                                <p class="text-gray-500">{{ $exp->company }}</p>
-                                <p class="text-gray-400 text-sm">{{ $exp->period }}</p>
+                                <h3 class="text-xl font-bold text-blue-700">{{ $about->experience->title ?? 'Pengalaman Profesional' }}</h3>
+                                <p class="text-gray-500">{{ $about->experience->company ?? 'Perusahaan' }}</p>
+                                <p class="text-gray-400 text-sm">{{ $about->experience->period ?? 'Periode' }}</p>
                             </div>
                             <div class="md:w-2/3 bg-gray-50 rounded-xl p-6 card-hover">
-                                <p class="text-gray-700 mb-4">{{ $exp->description ?? '' }}</p>
-
-                                @php
-                                    $expDetails = json_decode($exp->details ?? '[]', true) ?: [];
-                                @endphp
-
-                                @if(!empty($expDetails))
+                                <p class="text-gray-700 mb-4">{{ $about->experience->description ?? 'Deskripsi pengalaman profesional' }}</p>
+                                @if(isset($about->experience->details) && is_array(json_decode($about->experience->details, true)))
                                     <ul class="text-gray-600 list-disc pl-5">
-                                        @foreach($expDetails as $detail)
+                                        @foreach(json_decode($about->experience->details) as $detail)
                                             <li>{{ $detail }}</li>
                                         @endforeach
                                     </ul>
@@ -89,7 +90,26 @@
                             </div>
                         </div>
                     </div>
-                @endforeach
+                @else
+                    <!-- Fallback experience data -->
+                    <div class="mb-12 animate-on-scroll">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/3 mb-4 md:mb-0">
+                                <h3 class="text-xl font-bold text-blue-700">Full Stack Developer</h3>
+                                <p class="text-gray-500">PT. Teknologi Maju</p>
+                                <p class="text-gray-400 text-sm">Jan 2022 - Sekarang</p>
+                            </div>
+                            <div class="md:w-2/3 bg-gray-50 rounded-xl p-6 card-hover">
+                                <p class="text-gray-700 mb-4">Mengembangkan dan memelihara aplikasi web menggunakan Laravel, Vue.js, dan MySQL.</p>
+                                <ul class="text-gray-600 list-disc pl-5">
+                                    <li>Meningkatkan performa aplikasi hingga 40%</li>
+                                    <li>Mengimplementasikan sistem autentikasi yang aman</li>
+                                    <li>Memimpin tim pengembangan untuk 3 proyek besar</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </section>
@@ -103,22 +123,91 @@
             </div>
 
             <div class="max-w-4xl mx-auto">
-                @foreach(($skills ?? []) as $category => $skillGroup)
+                @if(isset($about) && $about->skill)
                     <div class="bg-white rounded-xl p-6 shadow-sm card-hover animate-on-scroll mb-8">
-                        <h3 class="text-xl font-bold text-blue-700 mb-6">{{ $category }}</h3>
-                        @foreach($skillGroup as $skill)
+                        <h3 class="text-xl font-bold text-blue-700 mb-6">Keterampilan Teknis</h3>
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-gray-700">{{ $about->skill->name ?? 'Keterampilan' }}</span>
+                                <span class="text-gray-700">{{ $about->skill->level ?? '80' }}%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-blue-600 h-2.5 rounded-full skill-bar" style="width:0%" data-width="{{ $about->skill->level ?? '80' }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <!-- Fallback skills data -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-white rounded-xl p-6 shadow-sm card-hover animate-on-scroll">
+                            <h3 class="text-xl font-bold text-blue-700 mb-6">Teknis</h3>
+                            
                             <div class="mb-4">
                                 <div class="flex justify-between mb-1">
-                                    <span class="text-gray-700">{{ $skill->name }}</span>
-                                    <span class="text-gray-700">{{ $skill->level ?? 0 }}%</span>
+                                    <span class="text-gray-700">Laravel</span>
+                                    <span class="text-gray-700">90%</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                    <div class="bg-blue-600 h-2.5 rounded-full skill-bar" style="width:0%" data-width="{{ $skill->level ?? 0 }}%"></div>
+                                    <div class="bg-blue-600 h-2.5 rounded-full skill-bar" style="width:0%" data-width="90%"></div>
                                 </div>
                             </div>
-                        @endforeach
+                            
+                            <div class="mb-4">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-gray-700">Vue.js</span>
+                                    <span class="text-gray-700">85%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-blue-600 h-2.5 rounded-full skill-bar" style="width:0%" data-width="85%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-gray-700">React</span>
+                                    <span class="text-gray-700">80%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-blue-600 h-2.5 rounded-full skill-bar" style="width:0%" data-width="80%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl p-6 shadow-sm card-hover animate-on-scroll">
+                            <h3 class="text-xl font-bold text-blue-700 mb-6">Profesional</h3>
+                            
+                            <div class="mb-4">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-gray-700">Komunikasi</span>
+                                    <span class="text-gray-700">90%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-blue-600 h-2.5 rounded-full skill-bar" style="width:0%" data-width="90%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-gray-700">Manajemen Waktu</span>
+                                    <span class="text-gray-700">85%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-blue-600 h-2.5 rounded-full skill-bar" style="width:0%" data-width="85%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-gray-700">Pemecahan Masalah</span>
+                                    <span class="text-gray-700">95%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-blue-600 h-2.5 rounded-full skill-bar" style="width:0%" data-width="95%"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                @endforeach
+                @endif
             </div>
         </div>
     </section>
@@ -132,74 +221,108 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach($projects ?? [] as $project)
-                    @php
-                        $techs = json_decode($project->technologies ?? '[]', true) ?: [];
-                        $demoLink = $project->demo_link ?? '#';
-                        $sourceLink = $project->source_code ?? '#';
-                    @endphp
-
+                @if(isset($about) && $about->project)
                     <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover animate-on-scroll">
                         <div class="h-48 bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center">
-                            <i class="{{ $project->icon ?? 'fas fa-box' }} text-white text-5xl"></i>
+                            <i class="{{ $about->project->icon ?? 'fas fa-project-diagram' }} text-white text-5xl"></i>
                         </div>
                         <div class="p-6">
-                            <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $project->title ?? '' }}</h3>
-                            <p class="text-gray-600 mb-4">{{ $project->description ?? '' }}</p>
-                            <div class="flex flex-wrap gap-2 mb-4">
-                                @foreach($techs as $tech)
-                                    <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">{{ $tech }}</span>
-                                @endforeach
-                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $about->project->title ?? 'Proyek' }}</h3>
+                            <p class="text-gray-600 mb-4">{{ $about->project->description ?? 'Deskripsi proyek' }}</p>
+                            @if(isset($about->project->technologies) && is_array(json_decode($about->project->technologies, true)))
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    @foreach(json_decode($about->project->technologies) as $tech)
+                                        <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">{{ $tech }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
                             <div class="flex justify-between">
-                                <a href="{{ $demoLink }}" target="{{ $demoLink !== '#' ? '_blank' : '_self' }}" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                                <a href="{{ $about->project->demo_link ?? '#' }}" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
                                     <i class="fas fa-external-link-alt mr-1"></i> Live Demo
                                 </a>
-                                <a href="{{ $sourceLink }}" target="{{ $sourceLink !== '#' ? '_blank' : '_self' }}" class="text-gray-600 hover:text-gray-800 font-medium flex items-center">
+                                <a href="{{ $about->project->source_code ?? '#' }}" target="_blank" class="text-gray-600 hover:text-gray-800 font-medium flex items-center">
                                     <i class="fab fa-github mr-1"></i> Source Code
                                 </a>
                             </div>
                         </div>
                     </div>
-                @endforeach
+                @else
+                    <!-- Fallback projects data -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover animate-on-scroll">
+                        <div class="h-48 bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center">
+                            <i class="fas fa-shopping-cart text-white text-5xl"></i>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">E-Commerce Platform</h3>
+                            <p class="text-gray-600 mb-4">Platform e-commerce lengkap dengan sistem pembayaran dan dashboard admin.</p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">Laravel</span>
+                                <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">Vue.js</span>
+                                <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">MySQL</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <a href="#" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                                    <i class="fas fa-external-link-alt mr-1"></i> Live Demo
+                                </a>
+                                <a href="#" class="text-gray-600 hover:text-gray-800 font-medium flex items-center">
+                                    <i class="fab fa-github mr-1"></i> Source Code
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover animate-on-scroll">
+                        <div class="h-48 bg-gradient-to-r from-green-400 to-green-600 flex items-center justify-center">
+                            <i class="fas fa-tasks text-white text-5xl"></i>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Project Management Tool</h3>
+                            <p class="text-gray-600 mb-4">Aplikasi manajemen proyek dengan fitur kolaborasi tim dan pelacakan waktu.</p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">React</span>
+                                <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">Node.js</span>
+                                <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">MongoDB</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <a href="#" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                                    <i class="fas fa-external-link-alt mr-1"></i> Live Demo
+                                </a>
+                                <a href="#" class="text-gray-600 hover:text-gray-800 font-medium flex items-center">
+                                    <i class="fab fa-github mr-1"></i> Source Code
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md card-hover animate-on-scroll">
+                        <div class="h-48 bg-gradient-to-r from-purple-400 to-purple-600 flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-5xl"></i>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Analytics Dashboard</h3>
+                            <p class="text-gray-600 mb-4">Dashboard analitik dengan visualisasi data real-time untuk metrik bisnis.</p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded">Vue.js</span>
+                                <span class="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded">Laravel</span>
+                                <span class="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded">Chart.js</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <a href="#" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+                                    <i class="fas fa-external-link-alt mr-1"></i> Live Demo
+                                </a>
+                                <a href="#" class="text-gray-600 hover:text-gray-800 font-medium flex items-center">
+                                    <i class="fab fa-github mr-1"></i> Source Code
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
 
             <div class="text-center mt-12">
-                <a href="{{ url('/contact') }}" class="bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 transition-all inline-flex items-center">
+                <a href="/contact" class="bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 transition-all inline-flex items-center">
                     <i class="fas fa-paper-plane mr-2"></i> Tertarik Bekerja Sama?
                 </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about" class="py-16 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-800 mb-4">Tentang Saya</h2>
-                <p class="text-gray-600 max-w-2xl mx-auto">Sedikit informasi mengenai latar belakang dan keahlian saya</p>
-            </div>
-
-            <div class="max-w-4xl mx-auto bg-white rounded-xl p-6 shadow-sm">
-                @if(isset($about))
-                    <h1 class="text-2xl font-bold text-gray-800 mb-4">{{ $about->title ?? '' }}</h1>
-                    <p class="text-gray-700 mb-4">{{ $about->content ?? '' }}</p>
-
-                    @if($about->experience)
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Pengalaman</h3>
-                        <p class="text-gray-700 mb-4">{{ $about->experience->title ?? '—' }}</p>
-                    @endif
-
-                    @if($about->skill)
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Keterampilan</h3>
-                        <p class="text-gray-700 mb-4">{{ $about->skill->name ?? '—' }}</p>
-                    @endif
-
-                    @if($about->project)
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Proyek</h3>
-                        <p class="text-gray-700 mb-4">{{ $about->project->title ?? '—' }}</p>
-                    @endif
-                @endif
             </div>
         </div>
     </section>
